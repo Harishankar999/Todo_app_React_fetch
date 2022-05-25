@@ -36,3 +36,15 @@
     transform: rotate(360deg);
   }
 }
+
+.inputtag {
+  height: 25px;
+  width: 300px;
+}
+.alltodo {
+  height: auto;
+  width: 300px;
+  margin: auto;
+  margin-top: 10px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
