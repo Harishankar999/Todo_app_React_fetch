@@ -1,55 +1,53 @@
-import React from "react";
-import { useEffect } from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 function Todos() {
   const [todos, setTodos] = useState([]);
-  const [newTodo, setNewTodo] = useState("");
-  const saveInfo = () => {
-    fetch("https://m6g3bt.sse.codesandbox.io/todos", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        value: newTodo,
-        isCompleted: false,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setTodos([...todos, data]);
-        setNewTodo("");
-      });
-  };
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [limit, setLimit] = useState(5);
   useEffect(() => {
-    fetch("https://d3h11l.sse.codesandbox.io/alltodos")
-      .then((res) => res.json())
-      .then((data) => {
-        setTodos(data);
-      });
-  }, []);
+    const getTodo = async () => {
+      let res = await axios.get(
+        `https://d3h11l.sse.codesandbox.io/alltodos?_page=${page}&_limit=${limit}`
+      );
+      setTodos(res.data);
+      setTotalCount(Number(res.headers["x-total-count"]));
+    };
+    getTodo();
+  }, [page, limit]);
   return (
-    <div>
-      
-      <h1>Todos App</h1>
-      <div>
-        <div>
-          <input className="inputtag"
-            value={newTodo}
-            onChange={({ target }) => setNewTodo(target.value)}
-          />
-          <br />
-          <br />
-          <button onClick={saveInfo}>SAVE</button>
+    <div className="App">
+      {todos.map((todo) => (
+        <div key={todo}>
+          {todo.id}
+          {`" "`}
+          {todo.value}
         </div>
-        <br />
-        <br />
-
-        {todos.map((todo) => (
-          <div className="alltodo" key={todo.id}><h3>{todo.value}</h3></div>
-        ))}
-      </div>
+      ))}
+      <button
+        disabled={page <= 1}
+        onClick={() => {
+          setPage(page + 1);
+        }}
+      >
+        {"<"}
+      </button>
+      <select onChange={(e) => setLimit(Number(e.target.value))}>
+        <option value={5}>5</option>
+        <option value={10}>10</option>
+        <option value={20}>20</option>
+        <option value={50}>50</option>
+        <option value={100}>100</option>
+      </select>
+      <button
+        disabled={page * limit > totalCount}
+        onClick={() => {
+          setPage(page + 1);
+        }}
+      >
+        {">"}
+      </button>
     </div>
   );
 }
